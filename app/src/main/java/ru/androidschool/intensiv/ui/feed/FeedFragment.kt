@@ -3,9 +3,9 @@ package ru.androidschool.intensiv.ui.feed
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.MenuInflater
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
@@ -50,6 +50,8 @@ class FeedFragment : Fragment() {
 
         // Добавляем recyclerView
         movies_recycler_view.layoutManager = LinearLayoutManager(context)
+
+        // зачем сначала пустой создавать?
         movies_recycler_view.adapter = adapter.apply { addAll(listOf()) }
 
         search_toolbar.search_edit_text.afterTextChanged {
