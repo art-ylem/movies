@@ -4,6 +4,7 @@
     <dimen name="material_margin_small">8dp</dimen>
     <dimen name="material_margin_super_small">4dp</dimen>
 
+    <dimen name="image_preview_height_large">150dp</dimen>
     <dimen name="image_preview_height">120dp</dimen>
     <dimen name="image_preview_width">75dp</dimen>
 
