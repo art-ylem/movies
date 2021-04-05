@@ -36,8 +36,6 @@
             tools:text="Заголовок карточки"
             tools:textColor="@color/white" />
 
-
-
         <androidx.appcompat.widget.AppCompatRatingBar
             android:id="@+id/tv_show_item_rating"
             style="@style/Base.Widget.AppCompat.RatingBar.Small"
@@ -52,7 +50,6 @@
             android:progressBackgroundTint="@color/colorControlNormal"
             android:stepSize="0.5"
             tools:rating="5" />
-
 
     </RelativeLayout>
 </LinearLayout>

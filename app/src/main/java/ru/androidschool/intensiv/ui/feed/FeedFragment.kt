@@ -51,7 +51,6 @@ class FeedFragment : Fragment() {
         // Добавляем recyclerView
         movies_recycler_view.layoutManager = LinearLayoutManager(context)
 
-        // зачем сначала пустой создавать?
         movies_recycler_view.adapter = adapter.apply { addAll(listOf()) }
 
         search_toolbar.search_edit_text.afterTextChanged {

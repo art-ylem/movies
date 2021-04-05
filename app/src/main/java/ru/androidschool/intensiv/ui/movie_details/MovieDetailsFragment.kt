@@ -2,45 +2,74 @@ package ru.androidschool.intensiv.ui.movie_details
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.google.android.material.checkbox.MaterialCheckBox
+import com.xwray.groupie.GroupAdapter
+import com.xwray.groupie.GroupieViewHolder
+import kotlinx.android.synthetic.main.movie_details_fragment.*
+import kotlinx.android.synthetic.main.movie_param.view.*
 import ru.androidschool.intensiv.R
+import ru.androidschool.intensiv.data.MockRepository
+import ru.androidschool.intensiv.data.MovieInfo
 
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
-class MovieDetailsFragment : Fragment() {
+class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
-    private var param1: String? = null
-    private var param2: String? = null
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val data = MockRepository.getMovieInfo(5, R.drawable.actor)
+        setUI(data)
+        setToolbar()
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    private fun setToolbar() {
+        (activity as AppCompatActivity).setSupportActionBar(my_toolbar)
+        setHasOptionsMenu(true)
+        my_toolbar.title = null
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_back)
+        my_toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.detailed_movie_fragment_menu, menu)
+        val checkBox = menu.findItem(R.id.like).actionView as MaterialCheckBox
+        // При первой инициализации все равно дефолтный цвет иконки, а потом когда кликаешь - все норм. Как сделать чтобы сразу нормальный цвет отображался?
+        checkBox.setButtonDrawable(R.drawable.like_selector)
+        checkBox.buttonTintMode = null
+    }
+
+    private fun setUI(data: MovieInfo) {
+        //set actors
+        actors_recycler_view.adapter = GroupAdapter<GroupieViewHolder>().apply {
+            addAll(data.actors.map { ActorItem(it) }.toList())
+        }
+
+        //set parameters
+        setParams(data)
+
+        //set other fields
+        title.text = data.title
+        description.text = data.description
+        tv_show_item_rating.rating = data.rating
+
+    }
+
+    private fun setParams(data: MovieInfo) {
+        data.params.forEach {
+            val view = LayoutInflater.from(context).inflate(
+                R.layout.movie_param, params_container,
+                false
+            )
+            view.item_value.text = it.value
+            view.item_title.text = it.title
+            params_container.addView(view)
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.movie_details_fragment, container, false)
-    }
 
-    companion object {
-
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            MovieDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
 }

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="60dp"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/material_margin_normal"
+    android:layout_marginEnd="@dimen/material_margin_normal"
+    android:orientation="vertical">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/actor_img_view"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
+        tools:src="@drawable/ic_avatar" />
+
+    <androidx.appcompat.widget.AppCompatTextView
+        android:id="@+id/actor_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/material_margin_small"
+        android:gravity="center"
+        android:textColor="@color/text_white"
+        android:textSize="@dimen/text_size_normal"
+        tools:text="Jason Momoa" />
+
+</LinearLayout>
