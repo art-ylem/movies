@@ -5,17 +5,15 @@
     android:layout_height="match_parent"
     android:background="@color/bg_details">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context="ru.androidschool.intensiv.ui.movie_details.MovieDetailsFragment">
 
-
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/image_view"
             android:layout_width="match_parent"
-            android:layout_height="210dp"
+            android:layout_height="@dimen/image_height_210dp"
             android:scaleType="centerCrop"
             android:src="@drawable/img_details"
             app:layout_constraintTop_toTopOf="parent" />
@@ -35,7 +33,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:minHeight="?attr/actionBarSize" />
-
 
         </com.google.android.material.appbar.AppBarLayout>
 

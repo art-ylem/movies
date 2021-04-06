@@ -6,6 +6,6 @@
         android:id="@+id/like"
         android:title="@string/ic_like"
         android:checkable="true"
-        app:actionViewClass="com.google.android.material.checkbox.MaterialCheckBox"
+        app:actionViewClass="android.widget.CheckBox"
         app:showAsAction="ifRoom" />
 </menu>

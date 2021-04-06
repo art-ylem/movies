@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
+import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.checkbox.MaterialCheckBox
@@ -37,9 +38,9 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.detailed_movie_fragment_menu, menu)
-        val checkBox = menu.findItem(R.id.like).actionView as MaterialCheckBox
-        // При первой инициализации все равно дефолтный цвет иконки, а потом когда кликаешь - все норм. Как сделать чтобы сразу нормальный цвет отображался?
+        val checkBox = menu.findItem(R.id.like).actionView as CheckBox
         checkBox.setButtonDrawable(R.drawable.like_selector)
+        checkBox.setPadding(0,0,32,0)
         checkBox.buttonTintMode = null
     }
 

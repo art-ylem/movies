@@ -23,5 +23,8 @@
     <dimen name="min_height">100dp</dimen>
     <dimen name="text_size_normal">18sp</dimen>
     <dimen name="dimens_22">22dp</dimen>
+    <dimen name="img_width_60dp">60dp</dimen>
+    <dimen name="img_height_60dp">60dp</dimen>
+    <dimen name="image_height_210dp">210dp</dimen>
 
 </resources>
