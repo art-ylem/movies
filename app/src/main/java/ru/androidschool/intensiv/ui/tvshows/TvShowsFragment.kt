@@ -34,9 +34,9 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     }
 
     private fun intiRecyclerView() {
-        val tvShows = MockRepository.getMovies().map {
-            TvShowItem(it)
-        }.toList()
-        tv_show_recycler_view.adapter = adapter.apply { addAll(tvShows) }
+//        val tvShows = MockRepository.getMovies().map {
+//            TvShowItem(it)
+//        }.toList()
+//        tv_show_recycler_view.adapter = adapter.apply { addAll(tvShows) }
     }
 }

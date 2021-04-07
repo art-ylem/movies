@@ -11,7 +11,7 @@ class TvShowItem(
 ) : Item() {
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.tv_show_item_title_text_view.text = movie.title
-        viewHolder.tv_show_item_rating.rating = movie.rating
+        viewHolder.tv_show_item_rating.rating = movie.rating?.toFloat()?:0F
     }
 
     override fun getLayout() = R.layout.tv_show_item

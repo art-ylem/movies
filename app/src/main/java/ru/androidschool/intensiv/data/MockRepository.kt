@@ -3,20 +3,20 @@ package ru.androidschool.intensiv.data
 import androidx.annotation.DrawableRes
 
 object MockRepository {
-
-    fun getMovies(): List<Movie> {
-
-        val moviesList = mutableListOf<Movie>()
-        for (x in 0..10) {
-            val movie = Movie(
-                title = "Spider-Man $x",
-                voteAverage = 10.0 - x
-            )
-            moviesList.add(movie)
-        }
-
-        return moviesList
-    }
+//
+//    fun getMovies(): List<Movie> {
+//
+//        val moviesList = mutableListOf<Movie>()
+//        for (x in 0..10) {
+//            val movie = Movie(
+//                title = "Spider-Man $x",
+//                rating = 10.0 - x
+//            )
+//            moviesList.add(movie)
+//        }
+//
+//        return moviesList
+//    }
 
     private fun getActors(count: Int, @DrawableRes img: Int): List<Actor> {
 

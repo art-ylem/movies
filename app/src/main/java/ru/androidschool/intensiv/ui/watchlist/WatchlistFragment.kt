@@ -47,14 +47,14 @@ class WatchlistFragment : Fragment() {
         movies_recycler_view.layoutManager = GridLayoutManager(context, 4)
         movies_recycler_view.adapter = adapter.apply { addAll(listOf()) }
 
-        val moviesList =
-            MockRepository.getMovies().map {
-                MoviePreviewItem(
-                    it
-                ) { movie -> }
-            }.toList()
-
-        movies_recycler_view.adapter = adapter.apply { addAll(moviesList) }
+//        val moviesList =
+//            MockRepository.getMovies().map {
+//                MoviePreviewItem(
+//                    it
+//                ) { movie -> }
+//            }.toList()
+//
+//        movies_recycler_view.adapter = adapter.apply { addAll(moviesList) }
     }
 
     companion object {
