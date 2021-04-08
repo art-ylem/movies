@@ -10,7 +10,6 @@ import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.fragment_watchlist.movies_recycler_view
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MockRepository
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"

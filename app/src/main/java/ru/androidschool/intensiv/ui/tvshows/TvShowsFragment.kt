@@ -7,8 +7,15 @@ import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.tv_shows_fragment.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import ru.androidschool.intensiv.BuildConfig
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MockRepository
+import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.data.MovieResponse
+import ru.androidschool.intensiv.network.MovieApiClient
+import timber.log.Timber
 
 class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 
@@ -28,15 +35,34 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        setHasOptionsMenu(false)
-
         intiRecyclerView()
     }
 
     private fun intiRecyclerView() {
-//        val tvShows = MockRepository.getMovies().map {
-//            TvShowItem(it)
-//        }.toList()
-//        tv_show_recycler_view.adapter = adapter.apply { addAll(tvShows) }
+        val tvShows = MovieApiClient.apiClient.getTvShow(API_KEY)
+        tvShows.enqueue(object : Callback<MovieResponse> {
+            override fun onResponse(
+                call: Call<MovieResponse>,
+                response: Response<MovieResponse>
+            ) {
+                moviesLoaded(response.body()?.results)
+            }
+
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                Timber.e(t)
+            }
+        })
+    }
+
+    private fun moviesLoaded(results: List<Movie>?) {
+        results?.let { list ->
+            val tvShows = list.map { movie -> TvShowItem(movie) }.toList()
+            //тут вылетит, если не дождаться получения ответа с сервера и отобразить. Стоит viewBinding использовать?
+            tv_show_recycler_view.adapter = adapter.apply { addAll(tvShows) }
+        }
+    }
+
+    companion object {
+        private const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API
     }
 }

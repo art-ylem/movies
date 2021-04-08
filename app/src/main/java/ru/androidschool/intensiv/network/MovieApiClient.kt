@@ -24,4 +24,3 @@ object MovieApiClient {
         return@lazy retrofit.create(MovieApiInterface::class.java)
     }
 }
-

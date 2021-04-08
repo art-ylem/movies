@@ -16,7 +16,7 @@ class MovieItem(
 
     override fun bind(viewHolder: GroupieViewHolder, position: Int) {
         viewHolder.description.text = content.title
-        viewHolder.movie_rating.rating = content.rating?.toFloat() ?: 0F
+        viewHolder.movie_rating.rating = (content.rating?.div(2))?.toFloat() ?: 0F
         viewHolder.content.setOnClickListener {
             onClick.invoke(content)
         }

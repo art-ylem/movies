@@ -26,5 +26,6 @@
     <dimen name="img_width_60dp">60dp</dimen>
     <dimen name="img_height_60dp">60dp</dimen>
     <dimen name="image_height_210dp">210dp</dimen>
+    <dimen name="margin_4dp">4dp</dimen>
 
 </resources>

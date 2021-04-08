@@ -6,10 +6,10 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import kotlinx.android.synthetic.main.feed_fragment.*
@@ -21,7 +21,6 @@ import retrofit2.Response
 import ru.androidschool.intensiv.BuildConfig
 import ru.androidschool.intensiv.MainActivity
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MockRepository
 import ru.androidschool.intensiv.data.Movie
 import ru.androidschool.intensiv.data.MovieResponse
 import ru.androidschool.intensiv.network.MovieApiClient
@@ -54,32 +53,8 @@ class FeedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        movies_recycler_view.adapter = adapter
-
         loadData()
-
         searchBarSetting()
-
-
-        // Используя Мок-репозиторий получаем фэйковый список фильмов
-//        val moviesList = listOf(
-//            MainCardContainer(
-//                R.string.recommended,
-//                MockRepository.getMovies().map {
-//                    MovieItem(it) { movie ->
-//                        openMovieDetails(
-//                            movie
-//                        )
-//                    }
-//                }.toList()
-//            )
-//        )
-//
-//        movies_recycler_view.adapter = adapter.apply { addAll(moviesList) }
-
-        // Используя Мок-репозиторий получаем фэйковый список фильмов
-        // Чтобы отобразить второй ряд фильмов
-
     }
 
     private fun searchBarSetting() {
@@ -92,25 +67,39 @@ class FeedFragment : Fragment() {
     }
 
     private fun loadData() {
-        val movieRequest = MovieApiClient.apiClient.getUpcomingMovies(API_KEY)
-
-        movieRequest.enqueue(object : Callback<MovieResponse> {
-            override fun onResponse(call: Call<MovieResponse>, response: Response<MovieResponse>) {
-                upcomingMoviesLoaded(response.body()?.results)
+        val upcomingMovies = MovieApiClient.apiClient.getUpcomingMovies(API_KEY)
+        upcomingMovies.enqueue(object : Callback<MovieResponse> {
+            override fun onResponse(
+                call: Call<MovieResponse>,
+                response: Response<MovieResponse>
+            ) {
+                moviesLoaded(response.body()?.results, R.string.upcoming)
             }
 
             override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                 Timber.e(t)
             }
+        })
 
+        val popularMovies = MovieApiClient.apiClient.getPopularMovies(API_KEY)
+        popularMovies.enqueue(object : Callback<MovieResponse> {
+            override fun onResponse(
+                call: Call<MovieResponse>,
+                response: Response<MovieResponse>
+            ) {
+                moviesLoaded(response.body()?.results, R.string.popular)
+            }
+            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                Timber.e(t)
+            }
         })
     }
 
-    private fun upcomingMoviesLoaded(results: List<Movie>?) {
+    private fun moviesLoaded(results: List<Movie>?, @StringRes title: Int) {
         results?.let { list ->
             val newMoviesList = listOf(
                 MainCardContainer(
-                    R.string.upcoming,
+                    title,
                     list.map { movie ->
                         MovieItem(movie) { movie ->
                             openMovieDetails(movie)
@@ -118,7 +107,6 @@ class FeedFragment : Fragment() {
                     }.toList()
                 )
             )
-
             movies_recycler_view.adapter = adapter.apply { addAll(newMoviesList) }
         }
     }
@@ -126,6 +114,7 @@ class FeedFragment : Fragment() {
     private fun openMovieDetails(movie: Movie) {
         val bundle = Bundle()
         bundle.putString(KEY_TITLE, movie.title)
+        bundle.putString(requireContext().getString(R.string.movieId), movie.id.toString())
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 
@@ -138,6 +127,8 @@ class FeedFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         search_toolbar.clear()
+        // так чистить адаптер? или лучше не чистить и проверять, если в адаптере есть что-то, то запросы не отправлять на получение данных снова?
+        adapter.clear()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

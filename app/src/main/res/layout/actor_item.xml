@@ -14,7 +14,7 @@
         android:layout_height="@dimen/img_height_60dp"
         android:scaleType="centerCrop"
         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize50Percent"
-        tools:src="@drawable/ic_avatar" />
+        android:src="@drawable/ic_avatar" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/actor_text_view"

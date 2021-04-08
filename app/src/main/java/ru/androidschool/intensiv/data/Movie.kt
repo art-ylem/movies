@@ -30,5 +30,16 @@ data class Movie(
     @SerializedName("vote_average")
     val rating: Double?,
     @SerializedName("vote_count")
-    val voteCount: Int?
+    val voteCount: Int?,
+
+    // for tv shows model
+    @SerializedName("first_air_date")
+    val firstAirDate: String?,
+    @SerializedName("name")
+    val tvShowTitle: String?,
+    @SerializedName("original_name")
+    val tvShowOriginalTitle: String?,
+    @SerializedName("origin_country")
+    val originCountry: List<String?>?
+
 )

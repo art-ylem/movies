@@ -8,23 +8,66 @@ import android.view.View
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.material.checkbox.MaterialCheckBox
 import com.xwray.groupie.GroupAdapter
-import com.xwray.groupie.GroupieViewHolder
 import kotlinx.android.synthetic.main.movie_details_fragment.*
 import kotlinx.android.synthetic.main.movie_param.view.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import ru.androidschool.intensiv.BuildConfig
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MockRepository
-import ru.androidschool.intensiv.data.MovieInfo
-
+import ru.androidschool.intensiv.data.*
+import ru.androidschool.intensiv.network.MovieApiClient
+import timber.log.Timber
 
 class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
+    private val adapter by lazy {
+        GroupAdapter<com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder>()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val data = MockRepository.getMovieInfo(5, R.drawable.actor)
-        setUI(data)
+        val movieId = requireArguments().getString(requireContext().getString(R.string.movieId))
+        movieId?.let { loadData(it) }
         setToolbar()
+    }
+
+    private fun loadData(id: String) {
+        loadMovieInfo(id)
+        loadMovieCredits(id)
+    }
+
+    private fun loadMovieCredits(id: String) {
+        val movieCredits = MovieApiClient.apiClient.getMovieCreditsById(id, API_KEY)
+        movieCredits.enqueue(object : Callback<MovieCredits> {
+            override fun onResponse(
+                call: Call<MovieCredits>,
+                response: Response<MovieCredits>
+            ) {
+                response.body()?.let { setCredits(it) }
+            }
+
+            override fun onFailure(call: Call<MovieCredits>, t: Throwable) {
+                Timber.e(t)
+            }
+        })
+    }
+
+    private fun loadMovieInfo(id: String) {
+        val movieInfo = MovieApiClient.apiClient.getMovieInfoById(id, API_KEY)
+        movieInfo.enqueue(object : Callback<MovieInfo> {
+            override fun onResponse(
+                call: Call<MovieInfo>,
+                response: Response<MovieInfo>
+            ) {
+                response.body()?.let { setInfo(it) }
+            }
+
+            override fun onFailure(call: Call<MovieInfo>, t: Throwable) {
+                Timber.e(t)
+            }
+        })
     }
 
     private fun setToolbar() {
@@ -40,37 +83,59 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         inflater.inflate(R.menu.detailed_movie_fragment_menu, menu)
         val checkBox = menu.findItem(R.id.like).actionView as CheckBox
         checkBox.setButtonDrawable(R.drawable.like_selector)
-        checkBox.setPadding(0,0,32,0)
+        checkBox.setPadding(0, 0, 32, 0)
         checkBox.buttonTintMode = null
     }
 
-    private fun setUI(data: MovieInfo) {
-        //set actors
-        actors_recycler_view.adapter = GroupAdapter<GroupieViewHolder>().apply {
-            addAll(data.actors.map { ActorItem(it) }.toList())
-        }
-
-        //set parameters
+    private fun setInfo(data: MovieInfo) {
+        // set parameters
         setParams(data)
 
-        //set other fields
+        // set other fields
         title.text = data.title
-        description.text = data.description
-        tv_show_item_rating.rating = data.rating
+        description.text = data.overview
+        tv_show_item_rating.rating = (data.voteAverage?.div(2))?.toFloat() ?: 0F
+    }
 
+    private fun setCredits(data: MovieCredits) {
+        // set actors
+        actors_recycler_view.adapter = adapter.apply {
+            data.crew?.map { ActorItem(it) }?.toList()?.let { addAll(it) }
+        }
     }
 
     private fun setParams(data: MovieInfo) {
-        data.params.forEach {
+        // add year
+        data.releaseDate?.let {
             val view = LayoutInflater.from(context).inflate(
                 R.layout.movie_param, params_container,
                 false
             )
-            view.item_value.text = it.value
-            view.item_title.text = it.title
+            view.item_value.text = it.subSequence(0, 4)
+            view.item_title.text = requireContext().getString(R.string.year)
+            params_container.addView(view)
+        }
+
+        // add genres
+        data.genres?.let { list ->
+            val view = LayoutInflater.from(context).inflate(
+                R.layout.movie_param, params_container,
+                false
+            )
+            val value = ArrayList<String>()
+            list.forEach { it.name?.let { it1 -> value.add(it1) } }
+            view.item_value.text = value.joinToString()
+            view.item_title.text = requireContext().getString(R.string.genres)
             params_container.addView(view)
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        adapter.clear()
+    }
 
+    companion object {
+        private const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API
+    }
 }
