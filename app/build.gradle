@@ -12,6 +12,8 @@ android {
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
     defaultConfig {
+        //Rename APK file
+        project.ext.set("archivesBaseName", "Movies-" + defaultConfig.versionName);
         applicationId "ru.androidschool.intensiv"
         minSdkVersion 21
         targetSdkVersion 30
@@ -23,8 +25,17 @@ android {
     }
     buildTypes {
         release {
+            // Removed unused resources
+//            shrinkResources true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
+            buildTypes {
+                release {
+                    buildConfigField "String", 'BASE_URL', "https://api.themoviedb.org/"
+                }
+            }
+
         }
     }
 
@@ -62,24 +73,24 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
 
     // Navigation
-    implementation "androidx.navigation:navigation-fragment-ktx:$rootProject.navigationVersion"
-    implementation "androidx.navigation:navigation-ui-ktx:$rootProject.navigationVersion"
+    implementation "androidx.navigation:navigation-fragment-ktx:$navigationVersion"
+    implementation "androidx.navigation:navigation-ui-ktx:$navigationVersion"
 
     // Picasso
-    implementation "com.squareup.picasso:picasso:$rootProject.picassoVersion"
-    implementation "jp.wasabeef:picasso-transformations:$rootProject.picassoTransformation"
+    implementation "com.squareup.picasso:picasso:$picassoVersion"
+    implementation "jp.wasabeef:picasso-transformations:$picassoTransformation"
 
-    implementation "androidx.recyclerview:recyclerview:$rootProject.recyclerViewVersion"
+    implementation "androidx.recyclerview:recyclerview:$recyclerViewVersion"
 
     // Groupie
-    implementation "com.xwray:groupie:$rootProject.groupieVersion"
-    implementation "com.xwray:groupie-kotlin-android-extensions:$rootProject.groupieVersion"
+    implementation "com.xwray:groupie:$groupieVersion"
+    implementation "com.xwray:groupie-kotlin-android-extensions:$groupieVersion"
 
-    implementation "com.jakewharton.timber:timber:$rootProject.timberVersion"
+    implementation "com.jakewharton.timber:timber:$timberVersion"
 
     //network
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.7.2'
+    implementation "com.squareup.retrofit2:retrofit:$retrofit"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okHttp"
 
 }

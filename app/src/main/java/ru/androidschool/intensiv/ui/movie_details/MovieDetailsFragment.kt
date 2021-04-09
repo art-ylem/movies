@@ -107,13 +107,17 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     private fun setParams(data: MovieInfo) {
         // add year
         data.releaseDate?.let {
-            val view = LayoutInflater.from(context).inflate(
-                R.layout.movie_param, params_container,
-                false
-            )
-            view.item_value.text = it.subSequence(0, 4)
-            view.item_title.text = requireContext().getString(R.string.year)
-            params_container.addView(view)
+            if (it.length > 4) {
+                val view = LayoutInflater.from(context).inflate(
+                    R.layout.movie_param, params_container,
+                    false
+                )
+
+                view.item_value.text = it.subSequence(0, 4)
+                view.item_title.text = requireContext().getString(R.string.year)
+                params_container.addView(view)
+            }
+
         }
 
         // add genres
@@ -123,7 +127,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
                 false
             )
             val value = ArrayList<String>()
-            list.forEach { it.name?.let { it1 -> value.add(it1) } }
+            list.forEach { it.name?.let { name -> value.add(name) } }
             view.item_value.text = value.joinToString()
             view.item_title.text = requireContext().getString(R.string.genres)
             params_container.addView(view)

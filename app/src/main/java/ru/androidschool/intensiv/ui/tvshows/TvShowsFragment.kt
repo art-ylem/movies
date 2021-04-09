@@ -36,9 +36,14 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         intiRecyclerView()
+        getMovies()
     }
 
     private fun intiRecyclerView() {
+        tv_show_recycler_view.adapter = adapter.apply { addAll(listOf()) }
+    }
+
+    private fun getMovies(){
         val tvShows = MovieApiClient.apiClient.getTvShow(API_KEY)
         tvShows.enqueue(object : Callback<MovieResponse> {
             override fun onResponse(
@@ -50,6 +55,7 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
 
             override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                 Timber.e(t)
+
             }
         })
     }
@@ -57,7 +63,9 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     private fun moviesLoaded(results: List<Movie>?) {
         results?.let { list ->
             val tvShows = list.map { movie -> TvShowItem(movie) }.toList()
-            //тут вылетит, если не дождаться получения ответа с сервера и отобразить. Стоит viewBinding использовать?
+            //тут вылетит, если не дождаться получения ответа с сервера и перейти на другой экран. Стоит viewBinding использовать?
+            //QUESTION: про это так и не понял. Необходимо проверять на null каждое UI поле? Выбрасывает movies_recycler_view must not be null, если не дождаться получения ответа с сервера и перейти на другой экран
+            //или просто зачистить подписки как в rx?
             tv_show_recycler_view.adapter = adapter.apply { addAll(tvShows) }
         }
     }

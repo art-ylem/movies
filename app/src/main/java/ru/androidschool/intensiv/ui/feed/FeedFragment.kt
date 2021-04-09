@@ -68,18 +68,20 @@ class FeedFragment : Fragment() {
 
     private fun loadData() {
         val upcomingMovies = MovieApiClient.apiClient.getUpcomingMovies(API_KEY)
-        upcomingMovies.enqueue(object : Callback<MovieResponse> {
-            override fun onResponse(
-                call: Call<MovieResponse>,
-                response: Response<MovieResponse>
-            ) {
-                moviesLoaded(response.body()?.results, R.string.upcoming)
-            }
+        upcomingMovies.enqueue(
+            object : Callback<MovieResponse> {
+                override fun onResponse(
+                    call: Call<MovieResponse>,
+                    response: Response<MovieResponse>
+                ) {
+                    moviesLoaded(response.body()?.results, R.string.upcoming)
+                }
 
-            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                Timber.e(t)
+                override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
+                    Timber.e(t)
+                }
             }
-        })
+        )
 
         val popularMovies = MovieApiClient.apiClient.getPopularMovies(API_KEY)
         popularMovies.enqueue(object : Callback<MovieResponse> {
@@ -89,11 +91,13 @@ class FeedFragment : Fragment() {
             ) {
                 moviesLoaded(response.body()?.results, R.string.popular)
             }
+
             override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
                 Timber.e(t)
             }
         })
     }
+
 
     private fun moviesLoaded(results: List<Movie>?, @StringRes title: Int) {
         results?.let { list ->
@@ -142,4 +146,16 @@ class FeedFragment : Fragment() {
         private val TAG = MainActivity::class.java.simpleName
         private const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API
     }
+}
+
+//QUESTION: так надо? только не пойму как вставить generic сюда, а то с типом Any не работает
+class RetrofitCallback(private val onSuccess: (data: Any) -> Unit) : Callback<Any> {
+    override fun onResponse(call: Call<Any>, response: Response<Any>) {
+        onSuccess(response)
+    }
+
+    override fun onFailure(call: Call<Any>, t: Throwable) {
+        Timber.e(t)
+    }
+
 }

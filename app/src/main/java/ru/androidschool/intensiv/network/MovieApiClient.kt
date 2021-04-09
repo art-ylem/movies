@@ -4,9 +4,10 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import ru.androidschool.intensiv.BuildConfig
 
 object MovieApiClient {
-    private const val BASE_URL = "https://api.themoviedb.org/"
+    private const val BASE_URL = "https://api.themoviedb.org/3/"
 
     private val client: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply {
@@ -23,4 +24,5 @@ object MovieApiClient {
 
         return@lazy retrofit.create(MovieApiInterface::class.java)
     }
+
 }
