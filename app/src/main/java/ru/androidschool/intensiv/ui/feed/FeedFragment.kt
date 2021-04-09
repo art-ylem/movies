@@ -1,17 +1,16 @@
 package ru.androidschool.intensiv.ui.feed
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.feed_header.*
 import kotlinx.android.synthetic.main.search_toolbar.view.*
@@ -32,6 +31,7 @@ class FeedFragment : Fragment() {
     private val adapter by lazy {
         GroupAdapter<GroupieViewHolder>()
     }
+    private val cd = CompositeDisposable()
 
     private val options = navOptions {
         anim {
@@ -67,37 +67,18 @@ class FeedFragment : Fragment() {
     }
 
     private fun loadData() {
-        val upcomingMovies = MovieApiClient.apiClient.getUpcomingMovies(API_KEY)
-        upcomingMovies.enqueue(
-            object : Callback<MovieResponse> {
-                override fun onResponse(
-                    call: Call<MovieResponse>,
-                    response: Response<MovieResponse>
-                ) {
-                    moviesLoaded(response.body()?.results, R.string.upcoming)
-                }
+        val dis = MovieApiClient.apiClient.getUpcomingMovies(API_KEY)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ moviesLoaded(it.results, R.string.upcoming) }, { err -> Timber.e(err) })
+        cd.add(dis)
 
-                override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                    Timber.e(t)
-                }
-            }
-        )
-
-        val popularMovies = MovieApiClient.apiClient.getPopularMovies(API_KEY)
-        popularMovies.enqueue(object : Callback<MovieResponse> {
-            override fun onResponse(
-                call: Call<MovieResponse>,
-                response: Response<MovieResponse>
-            ) {
-                moviesLoaded(response.body()?.results, R.string.popular)
-            }
-
-            override fun onFailure(call: Call<MovieResponse>, t: Throwable) {
-                Timber.e(t)
-            }
-        })
+        val dis2 = MovieApiClient.apiClient.getPopularMovies(API_KEY)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ moviesLoaded(it.results, R.string.popular) }, { err -> Timber.e(err) })
+        cd.add(dis2)
     }
-
 
     private fun moviesLoaded(results: List<Movie>?, @StringRes title: Int) {
         results?.let { list ->
@@ -128,9 +109,15 @@ class FeedFragment : Fragment() {
         findNavController().navigate(R.id.search_dest, bundle, options)
     }
 
+    private fun observersDispose() {
+        cd.dispose()
+        cd.clear()
+    }
+
     override fun onStop() {
         super.onStop()
         search_toolbar.clear()
+        observersDispose()
         // так чистить адаптер? или лучше не чистить и проверять, если в адаптере есть что-то, то запросы не отправлять на получение данных снова?
         adapter.clear()
     }
@@ -148,7 +135,7 @@ class FeedFragment : Fragment() {
     }
 }
 
-//QUESTION: так надо? только не пойму как вставить generic сюда, а то с типом Any не работает
+//QUESTION: так надо? только не пойму как вставить generic сюда, а то с типом Any не работает. upd: сейчас на рх заменили, но интересно как надо было сделать.
 class RetrofitCallback(private val onSuccess: (data: Any) -> Unit) : Callback<Any> {
     override fun onResponse(call: Call<Any>, response: Response<Any>) {
         onSuccess(response)

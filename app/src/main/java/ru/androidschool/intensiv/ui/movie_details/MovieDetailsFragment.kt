@@ -9,19 +9,22 @@ import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.xwray.groupie.GroupAdapter
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+import io.reactivex.schedulers.Schedulers.newThread
 import kotlinx.android.synthetic.main.movie_details_fragment.*
 import kotlinx.android.synthetic.main.movie_param.view.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import ru.androidschool.intensiv.BuildConfig
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.*
+import ru.androidschool.intensiv.data.MovieCredits
+import ru.androidschool.intensiv.data.MovieInfo
 import ru.androidschool.intensiv.network.MovieApiClient
 import timber.log.Timber
 
 class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
+    private val cd = CompositeDisposable()
     private val adapter by lazy {
         GroupAdapter<com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder>()
     }
@@ -39,35 +42,21 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun loadMovieCredits(id: String) {
-        val movieCredits = MovieApiClient.apiClient.getMovieCreditsById(id, API_KEY)
-        movieCredits.enqueue(object : Callback<MovieCredits> {
-            override fun onResponse(
-                call: Call<MovieCredits>,
-                response: Response<MovieCredits>
-            ) {
-                response.body()?.let { setCredits(it) }
-            }
+        val dis = MovieApiClient.apiClient.getMovieCreditsById(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ setCredits(it) }, { Timber.e(it) })
 
-            override fun onFailure(call: Call<MovieCredits>, t: Throwable) {
-                Timber.e(t)
-            }
-        })
+        cd.add(dis)
     }
 
     private fun loadMovieInfo(id: String) {
-        val movieInfo = MovieApiClient.apiClient.getMovieInfoById(id, API_KEY)
-        movieInfo.enqueue(object : Callback<MovieInfo> {
-            override fun onResponse(
-                call: Call<MovieInfo>,
-                response: Response<MovieInfo>
-            ) {
-                response.body()?.let { setInfo(it) }
-            }
+        val dis = MovieApiClient.apiClient.getMovieInfoById(id)
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ setInfo(it) }, { Timber.e(it) })
 
-            override fun onFailure(call: Call<MovieInfo>, t: Throwable) {
-                Timber.e(t)
-            }
-        })
+        cd.add(dis)
     }
 
     private fun setToolbar() {
@@ -137,6 +126,8 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     override fun onStop() {
         super.onStop()
         adapter.clear()
+        cd.dispose()
+        cd.clear()
     }
 
     companion object {

@@ -18,6 +18,7 @@ buildscript {
 
 allprojects {
     repositories {
+        maven { url "https://oss.jfrog.org/libs-snapshot" }
         google()
         jcenter()
 
@@ -50,4 +51,7 @@ ext {
     groupieVersion = '2.8.0'
     retrofit = '2.9.0'
     okHttp = '4.7.2'
+    rxjava = '2.2.16'
+    rxandroid = '2.1.1'
+    rxjavaAdapter = '2.9.0'
 }
