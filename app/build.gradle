@@ -20,7 +20,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
+        buildConfigField "String", 'BASE_URL', "\"https://api.themoviedb.org/3/\""
         buildConfigField 'String', 'THE_MOVIE_DATABASE_API', keystoreProperties['THE_MOVIE_DATABASE_API']
     }
     buildTypes {
@@ -29,14 +29,8 @@ android {
 //            shrinkResources true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-
-            buildTypes {
-                release {
-                    buildConfigField "String", 'BASE_URL', "https://api.themoviedb.org/"
-                }
-            }
-
         }
+
     }
 
     compileOptions {

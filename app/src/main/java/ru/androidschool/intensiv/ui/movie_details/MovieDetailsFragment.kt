@@ -12,7 +12,6 @@ import com.xwray.groupie.GroupAdapter
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.schedulers.Schedulers.newThread
 import kotlinx.android.synthetic.main.movie_details_fragment.*
 import kotlinx.android.synthetic.main.movie_param.view.*
 import ru.androidschool.intensiv.BuildConfig
@@ -106,7 +105,6 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
                 view.item_title.text = requireContext().getString(R.string.year)
                 params_container.addView(view)
             }
-
         }
 
         // add genres

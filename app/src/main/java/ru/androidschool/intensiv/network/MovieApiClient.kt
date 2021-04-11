@@ -8,7 +8,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import ru.androidschool.intensiv.BuildConfig
 
 object MovieApiClient {
-    private const val BASE_URL = "https://api.themoviedb.org/3/"
 
     private val client: OkHttpClient = OkHttpClient.Builder()
         .addInterceptor(HttpLoggingInterceptor().apply {
@@ -18,7 +17,7 @@ object MovieApiClient {
 
     val apiClient: MovieApiInterface by lazy {
         val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .client(client)
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
@@ -26,5 +25,4 @@ object MovieApiClient {
 
         return@lazy retrofit.create(MovieApiInterface::class.java)
     }
-
 }
