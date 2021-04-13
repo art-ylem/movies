@@ -12,19 +12,25 @@ import ru.androidschool.intensiv.data.MovieResponse
 interface MovieApiInterface {
 
     @GET("movie/upcoming/")
-    fun getUpcomingMovies(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse>
+    fun upcomingMoviesRequest(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse>
 
     @GET("movie/popular/")
-    fun getPopularMovies(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse>
+    fun popularMoviesRequest(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse>
 
     @GET("tv/popular/")
-    fun getTvShow(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse>
+    fun tvShowRequest(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse>
 
     @GET("movie/{movie_id}")
-    fun getMovieInfoById(@Path("movie_id") movieId: String, @Query("api_key") apiKey: String = API_KEY): Single<MovieInfo>
+    fun movieInfoByIdRequest(
+        @Path("movie_id") movieId: String,
+        @Query("api_key") apiKey: String = API_KEY
+    ): Single<MovieInfo>
 
     @GET("movie/{movie_id}/credits")
-    fun getMovieCreditsById(@Path("movie_id") movieId: String, @Query("api_key") apiKey: String = API_KEY): Single<MovieCredits>
+    fun movieCreditsByIdRequest(
+        @Path("movie_id") movieId: String,
+        @Query("api_key") apiKey: String = API_KEY
+    ): Single<MovieCredits>
 
     companion object {
         private const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API

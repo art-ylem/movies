@@ -12,7 +12,6 @@ android {
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
     defaultConfig {
-        //Rename APK file
         project.ext.set("archivesBaseName", "Movies-" + defaultConfig.versionName);
         applicationId "ru.androidschool.intensiv"
         minSdkVersion 21
@@ -21,12 +20,11 @@ android {
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField "String", 'BASE_URL', "\"https://api.themoviedb.org/3/\""
+        buildConfigField "String", 'IMAGE_URL', "\"https://image.tmdb.org/t/p/w500\""
         buildConfigField 'String', 'THE_MOVIE_DATABASE_API', keystoreProperties['THE_MOVIE_DATABASE_API']
     }
     buildTypes {
         release {
-            // Removed unused resources
-//            shrinkResources true
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

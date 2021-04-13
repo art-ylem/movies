@@ -1,8 +1,6 @@
 package ru.androidschool.intensiv.ui
 
 import android.content.Context
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +14,6 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.search_toolbar.view.*
 import ru.androidschool.intensiv.R
-import timber.log.Timber
 
 class SearchBar @JvmOverloads constructor(
     context: Context,
@@ -38,31 +35,14 @@ class SearchBar @JvmOverloads constructor(
                 recycle()
             }
         }
-        changeListener()
     }
 
-    private fun changeListener() {
-        val dis = searchViewObservable()
+    fun changeListener(): Observable<String> = searchViewObservable()
             .map { str -> str.replace(" ", "") }
-            .filter { it.length > 3 }
-            .debounce(500, TimeUnit.MILLISECONDS)
-            .subscribe({ Timber.d(it) }, { Timber.e(it) })
+            .filter { it.length > minSearchedString }
+            .debounce(debounceTimeout, TimeUnit.MILLISECONDS)
 
-        cd.add(dis)
-    }
-
-    private fun searchViewObservable() = Observable.create(ObservableOnSubscribe<String> {
-        editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-            override fun afterTextChanged(s: Editable?) {
-                it.onNext(s.toString())
-            }
-        })
-    })
-
-    // QUESTION: лучше методом afterTextChanged пользоваться? его тут вполне достаточно вроде?
-    private fun searchViewObservable2() =
+    private fun searchViewObservable() =
         Observable.create(ObservableOnSubscribe<String> { emitter ->
             editText.afterTextChanged { emitter.onNext(it.toString()) }
         })
@@ -73,7 +53,6 @@ class SearchBar @JvmOverloads constructor(
 
     fun clear() {
         this.editText.setText("")
-        cd.dispose()
         cd.clear()
     }
 
@@ -95,5 +74,10 @@ class SearchBar @JvmOverloads constructor(
                 delete_text_button.visibility = View.GONE
             }
         }
+    }
+
+    companion object {
+        private const val minSearchedString = 3
+        private const val debounceTimeout = 500L
     }
 }

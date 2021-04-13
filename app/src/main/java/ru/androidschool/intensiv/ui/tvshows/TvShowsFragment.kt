@@ -6,14 +6,12 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.tv_shows_fragment.*
-import ru.androidschool.intensiv.BuildConfig
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
-import ru.androidschool.intensiv.network.MovieApiClient
+import ru.androidschool.intensiv.myObserve
+import ru.androidschool.intensiv.retrofit
 import timber.log.Timber
 
 class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
@@ -23,7 +21,6 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
         GroupAdapter<GroupieViewHolder>()
     }
 
-    // сделать BaseFragment - родителя для всех фрагментов, и туда вынести options?
     private val options = navOptions {
         anim {
             enter = R.anim.slide_in_right
@@ -44,9 +41,8 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     }
 
     private fun getMovies() {
-        val dis = MovieApiClient.apiClient.getTvShow(API_KEY)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        val dis = retrofit.tvShowRequest()
+            .myObserve()
             .subscribe({ moviesLoaded(it.results) }, { Timber.e(it) })
 
         cd.add(dis)
@@ -55,20 +51,12 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     private fun moviesLoaded(results: List<Movie>?) {
         results?.let { list ->
             val tvShows = list.map { movie -> TvShowItem(movie) }.toList()
-            // тут вылетит, если не дождаться получения ответа с сервера и перейти на другой экран. Стоит viewBinding использовать?
-            // QUESTION: про это так и не понял. Необходимо проверять на null каждое UI поле? Выбрасывает movies_recycler_view must not be null, если не дождаться получения ответа с сервера и перейти на другой экран
-            // или просто зачистить подписки в rx?
             tv_show_recycler_view.adapter = adapter.apply { addAll(tvShows) }
         }
     }
 
-    override fun onStop() {
-        super.onStop()
-        cd.dispose()
+    override fun onDestroyView() {
+        super.onDestroyView()
         cd.clear()
-    }
-
-    companion object {
-        private const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API
     }
 }

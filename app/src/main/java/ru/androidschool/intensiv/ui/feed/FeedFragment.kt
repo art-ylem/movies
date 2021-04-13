@@ -8,21 +8,14 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.feed_header.*
-import kotlinx.android.synthetic.main.search_toolbar.view.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import ru.androidschool.intensiv.BuildConfig
-import ru.androidschool.intensiv.MainActivity
-import ru.androidschool.intensiv.R
+import ru.androidschool.intensiv.*
 import ru.androidschool.intensiv.data.Movie
-import ru.androidschool.intensiv.network.MovieApiClient
-import ru.androidschool.intensiv.ui.afterTextChanged
 import timber.log.Timber
 
 class FeedFragment : Fragment() {
@@ -57,24 +50,19 @@ class FeedFragment : Fragment() {
     }
 
     private fun searchBarSetting() {
-        search_toolbar.search_edit_text.afterTextChanged {
-            Timber.d(it.toString())
-            if (it.toString().length > MIN_LENGTH) {
-                openSearch(it.toString())
-            }
-        }
+        val dis = search_toolbar.changeListener()
+            .subscribe({ Timber.d(it) }, { Timber.e(it) })
+        cd.add(dis)
     }
 
     private fun loadData() {
-        val dis = MovieApiClient.apiClient.getUpcomingMovies(API_KEY)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        val dis = retrofit.upcomingMoviesRequest(API_KEY)
+            .myObserve()
             .subscribe({ moviesLoaded(it.results, R.string.upcoming) }, { err -> Timber.e(err) })
         cd.add(dis)
 
-        val dis2 = MovieApiClient.apiClient.getPopularMovies(API_KEY)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        val dis2 = retrofit.popularMoviesRequest(API_KEY)
+            .myObserve()
             .subscribe({ moviesLoaded(it.results, R.string.popular) }, { err -> Timber.e(err) })
         cd.add(dis2)
     }
@@ -98,7 +86,7 @@ class FeedFragment : Fragment() {
     private fun openMovieDetails(movie: Movie) {
         val bundle = Bundle()
         bundle.putString(KEY_TITLE, movie.title)
-        bundle.putString(requireContext().getString(R.string.movieId), movie.id.toString())
+        bundle.putString(movieId, movie.id.toString())
         findNavController().navigate(R.id.movie_details_fragment, bundle, options)
     }
 
@@ -108,15 +96,10 @@ class FeedFragment : Fragment() {
         findNavController().navigate(R.id.search_dest, bundle, options)
     }
 
-    private fun observersDispose() {
-        cd.dispose()
-        cd.clear()
-    }
-
     override fun onStop() {
         super.onStop()
         search_toolbar.clear()
-        observersDispose()
+        cd.clear()
         adapter.clear()
     }
 
@@ -130,6 +113,7 @@ class FeedFragment : Fragment() {
         const val KEY_SEARCH = "search"
         private val TAG = MainActivity::class.java.simpleName
         private const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API
+        private const val movieId = "movieId"
     }
 }
 

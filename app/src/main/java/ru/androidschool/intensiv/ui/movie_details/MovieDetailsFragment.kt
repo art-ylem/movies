@@ -9,16 +9,15 @@ import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.xwray.groupie.GroupAdapter
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.movie_details_fragment.*
 import kotlinx.android.synthetic.main.movie_param.view.*
-import ru.androidschool.intensiv.BuildConfig
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.MovieCredits
 import ru.androidschool.intensiv.data.MovieInfo
-import ru.androidschool.intensiv.network.MovieApiClient
+import ru.androidschool.intensiv.myObserve
+import ru.androidschool.intensiv.retrofit
+import ru.androidschool.intensiv.toRating
 import timber.log.Timber
 
 class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
@@ -30,7 +29,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val movieId = requireArguments().getString(requireContext().getString(R.string.movieId))
+        val movieId = requireArguments().getString(movieId)
         movieId?.let { loadData(it) }
         setToolbar()
     }
@@ -41,18 +40,16 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun loadMovieCredits(id: String) {
-        val dis = MovieApiClient.apiClient.getMovieCreditsById(id)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        val dis = retrofit.movieCreditsByIdRequest(id)
+            .myObserve()
             .subscribe({ setCredits(it) }, { Timber.e(it) })
 
         cd.add(dis)
     }
 
     private fun loadMovieInfo(id: String) {
-        val dis = MovieApiClient.apiClient.getMovieInfoById(id)
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
+        val dis = retrofit.movieInfoByIdRequest(id)
+            .myObserve()
             .subscribe({ setInfo(it) }, { Timber.e(it) })
 
         cd.add(dis)
@@ -82,7 +79,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         // set other fields
         title.text = data.title
         description.text = data.overview
-        tv_show_item_rating.rating = (data.voteAverage?.div(2))?.toFloat() ?: 0F
+        tv_show_item_rating.rating = data.voteAverage?.toRating()!!
     }
 
     private fun setCredits(data: MovieCredits) {
@@ -95,7 +92,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     private fun setParams(data: MovieInfo) {
         // add year
         data.releaseDate?.let {
-            if (it.length > 4) {
+            if (it.length > yearSubstring) {
                 val view = LayoutInflater.from(context).inflate(
                     R.layout.movie_param, params_container,
                     false
@@ -124,11 +121,12 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     override fun onStop() {
         super.onStop()
         adapter.clear()
-        cd.dispose()
         cd.clear()
     }
 
     companion object {
-        private const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API
+        // QUESTION: все "magic number" вынести в companion object?
+        private const val yearSubstring = 4
+        private const val movieId = "movieId"
     }
 }
