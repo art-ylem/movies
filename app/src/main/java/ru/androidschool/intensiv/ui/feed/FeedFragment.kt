@@ -11,9 +11,6 @@ import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.feed_header.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import ru.androidschool.intensiv.*
 import ru.androidschool.intensiv.data.Movie
 import timber.log.Timber
@@ -117,13 +114,3 @@ class FeedFragment : Fragment() {
     }
 }
 
-// QUESTION: так надо? только не пойму как вставить generic сюда, а то с типом Any не работает. upd: сейчас на рх заменили, но интересно как надо было сделать.
-class RetrofitCallback(private val onSuccess: (data: Any) -> Unit) : Callback<Any> {
-    override fun onResponse(call: Call<Any>, response: Response<Any>) {
-        onSuccess(response)
-    }
-
-    override fun onFailure(call: Call<Any>, t: Throwable) {
-        Timber.e(t)
-    }
-}
