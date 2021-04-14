@@ -9,10 +9,13 @@ import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.xwray.groupie.GroupAdapter
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.functions.BiFunction
 import kotlinx.android.synthetic.main.movie_details_fragment.*
 import kotlinx.android.synthetic.main.movie_param.view.*
 import ru.androidschool.intensiv.R
+import ru.androidschool.intensiv.data.DetailedMovie
 import ru.androidschool.intensiv.data.MovieCredits
 import ru.androidschool.intensiv.data.MovieInfo
 import ru.androidschool.intensiv.myObserve
@@ -35,24 +38,29 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun loadData(id: String) {
-        loadMovieInfo(id)
-        loadMovieCredits(id)
-    }
-
-    private fun loadMovieCredits(id: String) {
-        val dis = retrofit.movieCreditsByIdRequest(id)
+        //QUESTION: у Single'a можно просто в onError скрывать progressBar?
+        val dis = Single.zip(
+            retrofit.movieCreditsByIdRequest(id),
+            retrofit.movieInfoByIdRequest(id),
+            BiFunction<MovieCredits?, MovieInfo?, DetailedMovie?> { movieCredits, movieInfo ->
+                DetailedMovie(
+                    movieCredits,
+                    movieInfo
+                )
+            })
+            .doOnSubscribe { showProgressBar() }
             .myObserve()
-            .subscribe({ setCredits(it) }, { Timber.e(it) })
+            .doOnSuccess { hideProgressBar() }
+            .subscribe({
+                dataLoaded(it) }, {
+                Timber.e(it) })
 
         cd.add(dis)
     }
 
-    private fun loadMovieInfo(id: String) {
-        val dis = retrofit.movieInfoByIdRequest(id)
-            .myObserve()
-            .subscribe({ setInfo(it) }, { Timber.e(it) })
-
-        cd.add(dis)
+    private fun dataLoaded(detailedMovie: DetailedMovie?) {
+        detailedMovie?.credits?.let { setCredits(it) }
+        detailedMovie?.info?.let { setInfo(it) }
     }
 
     private fun setToolbar() {
@@ -80,6 +88,17 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         title.text = data.title
         description.text = data.overview
         tv_show_item_rating.rating = data.voteAverage?.toRating()!!
+    }
+
+    private fun hideProgressBar() {
+        //QUESTION: что-то не пойму как progress_bar расположить по середине экрана, nested scroll view не позволяет так делать?
+        progress_bar.visibility = View.GONE
+        main_container.visibility = View.VISIBLE
+    }
+
+    private fun showProgressBar() {
+        progress_bar.visibility = View.VISIBLE
+        main_container.visibility = View.GONE
     }
 
     private fun setCredits(data: MovieCredits) {

@@ -1,5 +1,6 @@
 package ru.androidschool.intensiv.network
 
+import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -12,10 +13,13 @@ import ru.androidschool.intensiv.data.MovieResponse
 interface MovieApiInterface {
 
     @GET("movie/upcoming/")
-    fun upcomingMoviesRequest(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse>
+    fun upcomingMoviesRequest(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse?>
 
     @GET("movie/popular/")
-    fun popularMoviesRequest(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse>
+    fun popularMoviesRequest(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse?>
+
+    @GET("movie/now_playing/")
+    fun nowPlayingMoviesRequest(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse?>
 
     @GET("tv/popular/")
     fun tvShowRequest(@Query("api_key") apiKey: String = API_KEY): Single<MovieResponse>
@@ -24,13 +28,13 @@ interface MovieApiInterface {
     fun movieInfoByIdRequest(
         @Path("movie_id") movieId: String,
         @Query("api_key") apiKey: String = API_KEY
-    ): Single<MovieInfo>
+    ): Single<MovieInfo?>
 
     @GET("movie/{movie_id}/credits")
     fun movieCreditsByIdRequest(
         @Path("movie_id") movieId: String,
         @Query("api_key") apiKey: String = API_KEY
-    ): Single<MovieCredits>
+    ): Single<MovieCredits?>
 
     companion object {
         private const val API_KEY = BuildConfig.THE_MOVIE_DATABASE_API

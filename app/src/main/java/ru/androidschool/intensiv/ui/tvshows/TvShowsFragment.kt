@@ -36,6 +36,14 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
         getMovies()
     }
 
+    private fun hideProgressBar() {
+        progress_bar.visibility = View.GONE
+    }
+
+    private fun showProgressBar() {
+        progress_bar.visibility = View.VISIBLE
+    }
+
     private fun intiRecyclerView() {
         tv_show_recycler_view.adapter = adapter.apply { addAll(listOf()) }
     }
@@ -43,6 +51,8 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     private fun getMovies() {
         val dis = retrofit.tvShowRequest()
             .myObserve()
+            .doOnSubscribe{showProgressBar()}
+            .doFinally { hideProgressBar() }
             .subscribe({ moviesLoaded(it.results) }, { Timber.e(it) })
 
         cd.add(dis)
