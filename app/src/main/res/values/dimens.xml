@@ -21,6 +21,7 @@
     <dimen name="dimens_32">32dp</dimen>
     <dimen name="search_bar_height">56dp</dimen>
     <dimen name="min_height">100dp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
     <dimen name="text_size_normal">18sp</dimen>
     <dimen name="dimens_22">22dp</dimen>
     <dimen name="img_width_60dp">60dp</dimen>

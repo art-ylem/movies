@@ -51,7 +51,7 @@ class TvShowsFragment : Fragment(R.layout.tv_shows_fragment) {
     private fun getMovies() {
         val dis = retrofit.tvShowRequest()
             .myObserve()
-            .doOnSubscribe{showProgressBar()}
+            .doOnSubscribe { showProgressBar() }
             .doFinally { hideProgressBar() }
             .subscribe({ moviesLoaded(it.results) }, { Timber.e(it) })
 

@@ -8,19 +8,19 @@ import android.view.View
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.functions.BiFunction
+import kotlinx.android.synthetic.main.item_with_text.*
 import kotlinx.android.synthetic.main.movie_details_fragment.*
+import kotlinx.android.synthetic.main.movie_details_fragment.description
 import kotlinx.android.synthetic.main.movie_param.view.*
-import ru.androidschool.intensiv.R
+import ru.androidschool.intensiv.*
 import ru.androidschool.intensiv.data.DetailedMovie
 import ru.androidschool.intensiv.data.MovieCredits
 import ru.androidschool.intensiv.data.MovieInfo
-import ru.androidschool.intensiv.myObserve
-import ru.androidschool.intensiv.retrofit
-import ru.androidschool.intensiv.toRating
 import timber.log.Timber
 
 class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
@@ -38,7 +38,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun loadData(id: String) {
-        //QUESTION: у Single'a можно просто в onError скрывать progressBar?
+        // QUESTION: у Single'a можно просто в onError скрывать progressBar?
         val dis = Single.zip(
             retrofit.movieCreditsByIdRequest(id),
             retrofit.movieInfoByIdRequest(id),
@@ -88,10 +88,13 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         title.text = data.title
         description.text = data.overview
         tv_show_item_rating.rating = data.voteAverage?.toRating()!!
+        Picasso.get()
+            .load(BuildConfig.IMAGE_URL + data.posterPath)
+            .into(image_view)
     }
 
     private fun hideProgressBar() {
-        //QUESTION: что-то не пойму как progress_bar расположить по середине экрана, nested scroll view не позволяет так делать?
+        // QUESTION: что-то не пойму как progress_bar расположить по середине экрана, nested scroll view не позволяет так делать?
         progress_bar.visibility = View.GONE
         main_container.visibility = View.VISIBLE
     }

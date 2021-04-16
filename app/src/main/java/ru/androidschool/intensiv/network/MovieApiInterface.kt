@@ -1,6 +1,5 @@
 package ru.androidschool.intensiv.network
 
-import io.reactivex.Observable
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Path

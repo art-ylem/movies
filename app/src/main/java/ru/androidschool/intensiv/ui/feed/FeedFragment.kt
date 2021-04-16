@@ -49,9 +49,9 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         cd.add(dis)
     }
 
-    private fun zipObservables(){
+    private fun zipObservables() {
         val dis = Single.zip(
-            //QUESTION:  хочу чтобы при ошибке одного запроса все остальные запросы не страдали.
+            // QUESTION:  хочу чтобы при ошибке одного запроса все остальные запросы не страдали.
             // Так норм сделать? Если будет у какого-то запроса error, то просто вернет null, а потом я ответ проверю на null
             retrofit.popularMoviesRequest().onErrorResumeNext { Single.just(null) },
             retrofit.upcomingMoviesRequest().onErrorResumeNext { Single.just(null) },
@@ -77,7 +77,6 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     private fun showProgressBar() {
         progress_bar.visibility = View.VISIBLE
     }
-
 
     private fun moviesLoaded(results: HashMap<BlockMovies, MovieResponse>) {
         results.keys.forEach {
@@ -156,4 +155,3 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
         POPULAR, NOW_PLAYING, UPCOMING
     }
 }
-
