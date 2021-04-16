@@ -44,7 +44,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
     }
 
     private fun searchBarSetting() {
-        val dis = search_toolbar.changeListener()
+        val dis = search_toolbar.getSearchPublishSubject()
             .subscribe({ Timber.d(it) }, { Timber.e(it) })
         cd.add(dis)
     }
