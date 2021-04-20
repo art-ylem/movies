@@ -82,5 +82,15 @@
             android:layout_height="match_parent"
             android:background="@color/blueDark" />
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/wish_list_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingTop="@dimen/material_margin_large"
+            android:scrollbars="vertical"
+            app:spanCount="4"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            tools:listitem="@layout/item_small" />
+
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

@@ -4,3 +4,5 @@ data class DetailedMovie(
     val credits: MovieCredits?,
     val info: MovieInfo?
 )
+
+
