@@ -51,19 +51,16 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
 
     private fun zipObservables() {
         val dis = Single.zip(
-            // QUESTION:  хочу чтобы при ошибке одного запроса все остальные запросы не страдали.
-            // Так норм сделать? Если будет у какого-то запроса error, то просто вернет null, а потом я ответ проверю на null
             retrofit.popularMoviesRequest().onErrorResumeNext { Single.just(null) },
             retrofit.upcomingMoviesRequest().onErrorResumeNext { Single.just(null) },
             retrofit.nowPlayingMoviesRequest().onErrorResumeNext { Single.just(null) },
-            Function3<MovieResponse?, MovieResponse?, MovieResponse?,
-                    HashMap<BlockMovies, MovieResponse>> { response1, response2, response3 ->
-                hashMapOf(
-                    BlockMovies.UPCOMING to response1,
-                    BlockMovies.POPULAR to response2,
-                    BlockMovies.NOW_PLAYING to response3
-                )
-            }).myObserve()
+            { popular, upcoming, nowPlaying ->
+        hashMapOf(
+            BlockMovies.UPCOMING to popular,
+            BlockMovies.POPULAR to upcoming,
+            BlockMovies.NOW_PLAYING to nowPlaying
+        )
+    }).myObserve()
             .doOnSubscribe { showProgressBar() }
             .doFinally { hideProgressBar() }
             .subscribe({ moviesLoaded(it) }, { err -> Timber.e(err) })
@@ -80,27 +77,19 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
 
     private fun moviesLoaded(results: HashMap<BlockMovies, MovieResponse>) {
         results.keys.forEach {
-            when (it) {
-                BlockMovies.NOW_PLAYING -> results[it]?.results?.let { movies ->
-                    addBlockToAdapter(
-                        movies,
-                        R.string.nowPlaying
-                    )
-                }
-                BlockMovies.POPULAR -> results[it]?.results?.let { movies ->
-                    addBlockToAdapter(
-                        movies,
-                        R.string.popular
-                    )
-                }
-                BlockMovies.UPCOMING -> results[it]?.results?.let { movies ->
-                    addBlockToAdapter(
-                        movies,
-                        R.string.upcoming
-                    )
-                }
+            results[it]?.results?.let { movies ->
+                addBlockToAdapter(
+                    movies,
+                    resolveTitle(it)
+                )
             }
         }
+    }
+
+    private fun resolveTitle(type: BlockMovies) = when (type) {
+        BlockMovies.UPCOMING -> R.string.upcoming
+        BlockMovies.POPULAR -> R.string.popular
+        BlockMovies.NOW_PLAYING -> R.string.nowPlaying
     }
 
     private fun addBlockToAdapter(results: List<Movie>, @StringRes title: Int) {

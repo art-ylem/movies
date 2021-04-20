@@ -50,7 +50,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun loadData(id: String) {
-        // QUESTION: у Single'a можно просто в onError скрывать progressBar?
+        // QUESTION: у Single'a придется в двух местах скрывать progress bar? в onError и onSuccess?
         val dis = Single.zip(
             retrofit.movieCreditsByIdRequest(id),
             retrofit.movieInfoByIdRequest(id),
@@ -66,6 +66,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
             .subscribe({
                 dataLoaded(it)
             }, {
+                hideProgressBar()
                 Timber.e(it)
             })
 
@@ -141,7 +142,6 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun hideProgressBar() {
-        // QUESTION: что-то не пойму как progress_bar расположить по середине экрана, nested scroll view не позволяет так делать?
         progress_bar.visibility = View.GONE
         main_container.visibility = View.VISIBLE
     }
@@ -195,7 +195,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     companion object {
-        // QUESTION: все "magic number" вынести в companion object?
+        //QUESTION: все "magic number" вынести в companion object?
         private const val yearSubstring = 4
         private const val debounceTime = 1L
         private const val movieId = "movieId"
