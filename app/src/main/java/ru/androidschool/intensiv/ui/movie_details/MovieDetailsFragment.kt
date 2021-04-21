@@ -13,8 +13,8 @@ import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.functions.BiFunction
 import io.reactivex.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.movie_details_fragment.*
 import kotlinx.android.synthetic.main.movie_details_fragment.description
 import kotlinx.android.synthetic.main.movie_param.view.*
@@ -25,7 +25,6 @@ import ru.androidschool.intensiv.data.MovieCredits
 import ru.androidschool.intensiv.data.MovieInfo
 import ru.androidschool.intensiv.room.AppDB
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
 class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
@@ -74,7 +73,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun dataLoaded(detailedMovie: DetailedMovie?) {
-        //QUESTION: так норм сохранять сущность?
+        // QUESTION: так норм сохранять сущность?
         currentMovie = detailedMovie?.copy()
 
         detailedMovie?.credits?.let { setCredits(it) }
@@ -119,8 +118,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun roomEntityMapper(data: DetailedMovie) =
-        data.info?.id?.let { id ->DetailedMovieRoom(id, data.info.posterPath) }
-
+        data.info?.id?.let { id -> DetailedMovieRoom(id, data.info.posterPath) }
 
     private fun likeBtnListener(checkBox: CheckBox) {
         checkBox.setOnCheckedChangeListener { _, isChecked ->
@@ -195,7 +193,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     companion object {
-        //QUESTION: все "magic number" вынести в companion object?
+        // QUESTION: все "magic number" вынести в companion object?
         private const val yearSubstring = 4
         private const val debounceTime = 1L
         private const val movieId = "movieId"

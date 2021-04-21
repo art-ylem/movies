@@ -76,7 +76,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             tab.text = spannableStringTitle
         }.attach()
 
-
         val dis = db.movies().getAll().myObserve()
             .subscribe({
                 dataLoaded(it)
@@ -85,7 +84,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             })
 
         cd.add(dis)
-
     }
 
     private fun dataLoaded(data: List<DetailedMovieRoom>?) {
@@ -94,7 +92,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 MoviePreviewItem(
                     Pair(roomItem.posterPath, roomItem.id)
                 ) {
-                    //TODO go to detailed movie fragment by id
+                    // TODO go to detailed movie fragment by id
                 }
             }?.toList()?.let { addAll(it) }
         }
@@ -104,7 +102,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         super.onStop()
         cd.clear()
     }
-
 
     companion object {
         private const val movieDB = "movie_database"

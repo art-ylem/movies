@@ -7,8 +7,6 @@ import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
-import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.subjects.PublishSubject
 import java.util.*
@@ -30,8 +28,8 @@ class SearchBar @JvmOverloads constructor(
     private val searchPublishSubject = PublishSubject.create<String>()
     fun getSearchPublishSubject() = searchPublishSubject
         .map { str -> str.replace(" ", "") }
-        //QUESTION: у меня не видит метод isWhitespace()
-        //.filter { !it.isWhitespace() }
+        // QUESTION: у меня не видит метод isWhitespace()
+//        .filter { !it.isWhitespace() }
         .filter { it.length > minSearchedString }
         .debounce(debounceTimeout, TimeUnit.MILLISECONDS)
 
@@ -47,10 +45,9 @@ class SearchBar @JvmOverloads constructor(
         searchViewObservable()
     }
 
-    private fun searchViewObservable(){
+    private fun searchViewObservable() {
         editText.afterTextChanged { searchPublishSubject.onNext(it.toString()) }
     }
-
 
     fun setText(text: String?) {
         this.editText.setText(text)

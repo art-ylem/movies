@@ -1,7 +1,6 @@
 package ru.androidschool.intensiv.room
 
 import androidx.room.*
-import io.reactivex.Observable
 import io.reactivex.Single
 import ru.androidschool.intensiv.data.DetailedMovieRoom
 
@@ -18,5 +17,4 @@ interface WishListMovieDAO {
 
     @Delete
     fun delete(vararg data: DetailedMovieRoom)
-
 }
