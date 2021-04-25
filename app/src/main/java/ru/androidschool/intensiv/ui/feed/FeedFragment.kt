@@ -14,9 +14,9 @@ import kotlinx.android.synthetic.main.feed_fragment.*
 import kotlinx.android.synthetic.main.feed_header.*
 import ru.androidschool.intensiv.MainActivity
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.Movie
-import ru.androidschool.intensiv.data.MovieResponse
-import ru.androidschool.intensiv.myObserve
+import ru.androidschool.intensiv.applySchedulers
+import ru.androidschool.intensiv.data.dto.Movie
+import ru.androidschool.intensiv.data.dto.MovieResponse
 import ru.androidschool.intensiv.retrofit
 import timber.log.Timber
 
@@ -59,7 +59,7 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
                     BlockMovies.POPULAR to upcoming,
                     BlockMovies.NOW_PLAYING to nowPlaying
                 )
-            }).myObserve()
+            }).applySchedulers()
             .doOnSubscribe { showProgressBar() }
             .doFinally { hideProgressBar() }
             .subscribe({ moviesLoaded(it) }, { err -> Timber.e(err) })

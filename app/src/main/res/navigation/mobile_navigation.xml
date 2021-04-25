@@ -42,7 +42,7 @@
 
     <fragment
         android:id="@+id/tv_shows_dest"
-        android:name="ru.androidschool.intensiv.ui.tvshows.TvShowsFragment"
+        android:name="ru.androidschool.intensiv.presentation.tvshows.TvShowsFragment"
         android:label="@string/tv_show"
         tools:layout="@layout/tv_shows_fragment">
 

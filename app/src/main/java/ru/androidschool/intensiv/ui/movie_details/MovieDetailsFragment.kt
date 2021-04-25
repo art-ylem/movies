@@ -18,10 +18,10 @@ import kotlinx.android.synthetic.main.movie_details_fragment.*
 import kotlinx.android.synthetic.main.movie_details_fragment.description
 import kotlinx.android.synthetic.main.movie_param.view.*
 import ru.androidschool.intensiv.*
-import ru.androidschool.intensiv.data.DetailedMovie
-import ru.androidschool.intensiv.data.DetailedMovieEntity
-import ru.androidschool.intensiv.data.MovieCredits
-import ru.androidschool.intensiv.data.MovieInfo
+import ru.androidschool.intensiv.data.dto.DetailedMovie
+import ru.androidschool.intensiv.data.dto.DetailedMovieEntity
+import ru.androidschool.intensiv.data.dto.MovieCredits
+import ru.androidschool.intensiv.data.dto.MovieInfo
 import ru.androidschool.intensiv.room.AppDB
 import timber.log.Timber
 
@@ -58,7 +58,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
                 )
             })
             .doOnSubscribe { showProgressBar() }
-            .myObserve()
+            .applySchedulers()
             .doFinally { hideProgressBar() }
             .subscribe({
                 dataLoaded(it)

@@ -4,7 +4,7 @@ import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.android.synthetic.main.actor_item.*
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.Crew
+import ru.androidschool.intensiv.data.dto.Crew
 import ru.androidschool.intensiv.setUsePicasso
 
 class ActorItem(private val item: Crew) : Item() {

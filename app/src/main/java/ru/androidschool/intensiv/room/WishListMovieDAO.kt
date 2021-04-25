@@ -2,7 +2,7 @@ package ru.androidschool.intensiv.room
 
 import androidx.room.*
 import io.reactivex.Single
-import ru.androidschool.intensiv.data.DetailedMovieEntity
+import ru.androidschool.intensiv.data.dto.DetailedMovieEntity
 
 @Dao
 interface WishListMovieDAO {

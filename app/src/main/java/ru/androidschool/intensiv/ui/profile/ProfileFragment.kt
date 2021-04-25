@@ -16,8 +16,8 @@ import io.reactivex.disposables.CompositeDisposable
 import jp.wasabeef.picasso.transformations.CropCircleTransformation
 import kotlinx.android.synthetic.main.fragment_profile.*
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.DetailedMovieEntity
-import ru.androidschool.intensiv.myObserve
+import ru.androidschool.intensiv.applySchedulers
+import ru.androidschool.intensiv.data.dto.DetailedMovieEntity
 import ru.androidschool.intensiv.room.AppDB
 import ru.androidschool.intensiv.ui.watchlist.MoviePreviewItem
 
@@ -76,7 +76,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             tab.text = spannableStringTitle
         }.attach()
 
-        val dis = db.movies().getAll().myObserve()
+        val dis = db.movies().getAll().applySchedulers()
             .subscribe({
                 dataLoaded(it)
             }, {

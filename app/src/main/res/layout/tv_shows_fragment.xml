@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="ru.androidschool.intensiv.ui.tvshows.TvShowsFragment">
+    tools:context=".presentation.tvshows.TvShowsFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tv_show_recycler_view"
