@@ -1,6 +1,8 @@
-package ru.androidschool.intensiv.data
+package ru.androidschool.intensiv.data.repository
 
 import androidx.annotation.DrawableRes
+import ru.androidschool.intensiv.data.dto.Actor
+import ru.androidschool.intensiv.data.dto.MovieParameter
 
 object MockRepository {
 

@@ -1,4 +1,4 @@
-package ru.androidschool.intensiv.data
+package ru.androidschool.intensiv.data.dto
 
 data class MovieParameter(
     val title: String,

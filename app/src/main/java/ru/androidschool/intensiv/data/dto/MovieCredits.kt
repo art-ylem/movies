@@ -1,4 +1,4 @@
-package ru.androidschool.intensiv.data
+package ru.androidschool.intensiv.data.dto
 import com.google.gson.annotations.SerializedName
 
 data class MovieCredits(
