@@ -1,12 +1,11 @@
 package ru.androidschool.intensiv.ui.feed
 
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder
 import com.xwray.groupie.kotlinandroidextensions.Item
 import kotlinx.android.synthetic.main.item_with_text.*
-import ru.androidschool.intensiv.BuildConfig
 import ru.androidschool.intensiv.R
 import ru.androidschool.intensiv.data.Movie
+import ru.androidschool.intensiv.setUsePicasso
 import ru.androidschool.intensiv.toRating
 
 class MovieItem(
@@ -22,9 +21,6 @@ class MovieItem(
         viewHolder.content.setOnClickListener {
             onClick.invoke(content)
         }
-
-        Picasso.get()
-            .load(BuildConfig.IMAGE_URL + content.posterPath)
-            .into(viewHolder.image_preview)
+        viewHolder.image_preview.setUsePicasso(content.posterPath)
     }
 }

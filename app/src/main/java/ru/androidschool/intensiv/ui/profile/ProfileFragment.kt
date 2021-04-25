@@ -16,7 +16,7 @@ import io.reactivex.disposables.CompositeDisposable
 import jp.wasabeef.picasso.transformations.CropCircleTransformation
 import kotlinx.android.synthetic.main.fragment_profile.*
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.DetailedMovieRoom
+import ru.androidschool.intensiv.data.DetailedMovieEntity
 import ru.androidschool.intensiv.myObserve
 import ru.androidschool.intensiv.room.AppDB
 import ru.androidschool.intensiv.ui.watchlist.MoviePreviewItem
@@ -86,7 +86,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         cd.add(dis)
     }
 
-    private fun dataLoaded(data: List<DetailedMovieRoom>?) {
+    private fun dataLoaded(data: List<DetailedMovieEntity>?) {
         wish_list_recycler_view.adapter = adapter.apply {
             data?.map { roomItem ->
                 MoviePreviewItem(

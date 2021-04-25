@@ -54,12 +54,12 @@ class FeedFragment : Fragment(R.layout.feed_fragment) {
             retrofit.upcomingMoviesRequest().onErrorResumeNext { Single.just(null) },
             retrofit.nowPlayingMoviesRequest().onErrorResumeNext { Single.just(null) },
             { popular, upcoming, nowPlaying ->
-        hashMapOf(
-            BlockMovies.UPCOMING to popular,
-            BlockMovies.POPULAR to upcoming,
-            BlockMovies.NOW_PLAYING to nowPlaying
-        )
-    }).myObserve()
+                hashMapOf(
+                    BlockMovies.UPCOMING to popular,
+                    BlockMovies.POPULAR to upcoming,
+                    BlockMovies.NOW_PLAYING to nowPlaying
+                )
+            }).myObserve()
             .doOnSubscribe { showProgressBar() }
             .doFinally { hideProgressBar() }
             .subscribe({ moviesLoaded(it) }, { err -> Timber.e(err) })

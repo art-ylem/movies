@@ -2,19 +2,19 @@ package ru.androidschool.intensiv.room
 
 import androidx.room.*
 import io.reactivex.Single
-import ru.androidschool.intensiv.data.DetailedMovieRoom
+import ru.androidschool.intensiv.data.DetailedMovieEntity
 
 @Dao
 interface WishListMovieDAO {
     @Query("SELECT * FROM wishList")
-    fun getAll(): Single<List<DetailedMovieRoom>>
+    fun getAll(): Single<List<DetailedMovieEntity>>
 
     @Insert
-    fun insert(data: DetailedMovieRoom)
+    fun insert(data: DetailedMovieEntity)
 
     @Update
-    fun update(data: DetailedMovieRoom)
+    fun update(data: DetailedMovieEntity)
 
     @Delete
-    fun delete(vararg data: DetailedMovieRoom)
+    fun delete(vararg data: DetailedMovieEntity)
 }

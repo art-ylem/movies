@@ -28,8 +28,6 @@ class SearchBar @JvmOverloads constructor(
     private val searchPublishSubject = PublishSubject.create<String>()
     fun getSearchPublishSubject() = searchPublishSubject
         .map { str -> str.replace(" ", "") }
-        // QUESTION: у меня не видит метод isWhitespace()
-//        .filter { !it.isWhitespace() }
         .filter { it.length > minSearchedString }
         .debounce(debounceTimeout, TimeUnit.MILLISECONDS)
 

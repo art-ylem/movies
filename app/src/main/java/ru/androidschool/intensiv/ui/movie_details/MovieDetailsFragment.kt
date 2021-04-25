@@ -9,7 +9,6 @@ import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.room.Room
-import com.squareup.picasso.Picasso
 import com.xwray.groupie.GroupAdapter
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
@@ -20,7 +19,7 @@ import kotlinx.android.synthetic.main.movie_details_fragment.description
 import kotlinx.android.synthetic.main.movie_param.view.*
 import ru.androidschool.intensiv.*
 import ru.androidschool.intensiv.data.DetailedMovie
-import ru.androidschool.intensiv.data.DetailedMovieRoom
+import ru.androidschool.intensiv.data.DetailedMovieEntity
 import ru.androidschool.intensiv.data.MovieCredits
 import ru.androidschool.intensiv.data.MovieInfo
 import ru.androidschool.intensiv.room.AppDB
@@ -49,7 +48,6 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun loadData(id: String) {
-        // QUESTION: у Single'a придется в двух местах скрывать progress bar? в onError и onSuccess?
         val dis = Single.zip(
             retrofit.movieCreditsByIdRequest(id),
             retrofit.movieInfoByIdRequest(id),
@@ -61,11 +59,10 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
             })
             .doOnSubscribe { showProgressBar() }
             .myObserve()
-            .doOnSuccess { hideProgressBar() }
+            .doFinally { hideProgressBar() }
             .subscribe({
                 dataLoaded(it)
             }, {
-                hideProgressBar()
                 Timber.e(it)
             })
 
@@ -73,7 +70,7 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun dataLoaded(detailedMovie: DetailedMovie?) {
-        // QUESTION: так норм сохранять сущность?
+        // QUESTION: copy() - чтобы если алоцировал место в памяти под свой объект, а не просто ссылался на detailedMovie
         currentMovie = detailedMovie?.copy()
 
         detailedMovie?.credits?.let { setCredits(it) }
@@ -100,25 +97,32 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun likeBtnObserver() {
+        // QUESTION: subject - чтобы можно было пользоваться методом debounce
         val dis = likePublishSubject.debounce(debounceTime, TimeUnit.SECONDS)
-            .subscribe { isLiked -> if (isLiked) sendDataToDB() else deleteDataFromDB() }
+            .subscribe { isLiked ->
+                if (isLiked) {
+                    saveDataToDB(currentMovie)
+                } else {
+                    deleteDataFromDB(currentMovie)
+                }
+            }
         cd.add(dis)
     }
 
-    private fun deleteDataFromDB() {
+    private fun deleteDataFromDB(currentMovie: DetailedMovie?) {
         currentMovie?.let {
             roomEntityMapper(it)?.let { dbData -> db.movies().delete(dbData) }
         }
     }
 
-    private fun sendDataToDB() {
+    private fun saveDataToDB(currentMovie: DetailedMovie?) {
         currentMovie?.let {
             roomEntityMapper(it)?.let { dbData -> db.movies().insert(dbData) }
         }
     }
 
     private fun roomEntityMapper(data: DetailedMovie) =
-        data.info?.id?.let { id -> DetailedMovieRoom(id, data.info.posterPath) }
+        data.info?.id?.let { id -> DetailedMovieEntity(id, data.info.posterPath) }
 
     private fun likeBtnListener(checkBox: CheckBox) {
         checkBox.setOnCheckedChangeListener { _, isChecked ->
@@ -134,9 +138,8 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         title.text = data.title
         description.text = data.overview
         tv_show_item_rating.rating = data.voteAverage?.toRating()!!
-        Picasso.get()
-            .load(BuildConfig.IMAGE_URL + data.posterPath)
-            .into(image_view)
+
+        image_view.setUsePicasso(data.posterPath)
     }
 
     private fun hideProgressBar() {
@@ -193,7 +196,6 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     companion object {
-        // QUESTION: все "magic number" вынести в companion object?
         private const val yearSubstring = 4
         private const val debounceTime = 1L
         private const val movieId = "movieId"
