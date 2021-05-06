@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.feed_header.*
 import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.ui.feed.FeedFragment.Companion.KEY_SEARCH
+import ru.androidschool.intensiv.presentation.feed.FeedFragment.Companion.KEY_SEARCH
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
