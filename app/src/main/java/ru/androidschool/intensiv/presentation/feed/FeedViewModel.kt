@@ -9,26 +9,23 @@ import ru.androidschool.intensiv.domain.usecase.FeedUseCase
 import timber.log.Timber
 import javax.inject.Inject
 
-class FeedViewModel : BaseViewModel<FeedViewModel.ViewState>() {
-    @Inject lateinit var feedUseCase: FeedUseCase
+class FeedViewModel @Inject constructor(private var feedUseCase: FeedUseCase) : BaseViewModel<FeedViewModel.ViewState>() {
 
     private var _uiStateLiveData: MutableLiveData<List<ViewState>> = MutableLiveData()
     fun uiStateLiveData(): LiveData<List<ViewState>> = _uiStateLiveData
 
 
-    fun load() {
+    private fun load() {
 
-        val dis = feedUseCase.getMovies().doOnSubscribe { ViewState.ShowLoadingViewState }
-            .doFinally { ViewState.HideLoadingViewState }
-            .subscribe({ ViewState.OnSuccessState(it) }, { err ->
-                ViewState.ErrorState
+        val dis = feedUseCase.getMovies().doOnSubscribe { _uiStateLiveData.postUiState(ViewState.ShowLoadingViewState) }
+            .subscribe({ _uiStateLiveData.postUiState(ViewState.OnSuccessState(it)) }, { err ->
+                _uiStateLiveData.postUiState(ViewState.ErrorState)
                 Timber.e(err)
             })
         cd.add(dis)
     }
 
     init {
-//        DaggerAppComponent.builder().build().inject(this)
         load()
     }
 
@@ -36,7 +33,7 @@ class FeedViewModel : BaseViewModel<FeedViewModel.ViewState>() {
         object ShowLoadingViewState : ViewState()
         object HideLoadingViewState : ViewState()
         object ErrorState : ViewState()
-        class OnSuccessState(val onSuccessData: Any?) :
+        class OnSuccessState(val onSuccessData: HashMap<FeedFragment.BlockMovies, MovieResponse>) :
             ViewState()
     }
 }

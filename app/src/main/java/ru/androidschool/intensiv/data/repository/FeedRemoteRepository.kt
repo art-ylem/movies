@@ -7,7 +7,7 @@ import ru.androidschool.intensiv.domain.repository.FeedRepository
 import ru.androidschool.intensiv.presentation.feed.FeedFragment
 import javax.inject.Inject
 
-class FeedRemoteRepository (private val retrofit: MovieApiInterface) : FeedRepository {
+class FeedRemoteRepository @Inject constructor(private val retrofit: MovieApiInterface) : FeedRepository {
 
     override fun getMovies(): Single<HashMap<FeedFragment.BlockMovies, MovieResponse>> {
         return Single.zip(

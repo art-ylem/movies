@@ -52,14 +52,9 @@ class FeedFragment : BaseStateFragment(R.layout.feed_fragment) {
 
         (requireActivity().application as MovieFinderApp).component.inject(this)
         viewModel = ViewModelProvider(this, viewModelFactory).get(FeedViewModel::class.java)
-
-        searchBarSetting()
-    }
-
-    override fun onStart() {
-        super.onStart()
         observerUiLiveData()
 
+        searchBarSetting()
     }
 
     private fun searchBarSetting() {
@@ -73,12 +68,18 @@ class FeedFragment : BaseStateFragment(R.layout.feed_fragment) {
             states.forEach { state ->
                 when (state) {
                     FeedViewModel.ViewState.ErrorState -> {
+                        val o = 0
                     }
-                    FeedViewModel.ViewState.HideLoadingViewState -> hideProgressBar()
+                    FeedViewModel.ViewState.HideLoadingViewState -> {
+                        hideProgressBar()
+                    }
                     is FeedViewModel.ViewState.OnSuccessState -> {
-                        val o = state.onSuccessData
+                        hideProgressBar()
+                        moviesLoaded(state.onSuccessData)
                     }
-                    FeedViewModel.ViewState.ShowLoadingViewState -> showProgressBar()
+                    FeedViewModel.ViewState.ShowLoadingViewState -> {
+                        showProgressBar()
+                    }
                 }
             }
         })
