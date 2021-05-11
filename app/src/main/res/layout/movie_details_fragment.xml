@@ -1,139 +1,156 @@
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_details">
+    android:orientation="vertical">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="visible" />
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/bg_details"
         tools:context="ru.androidschool.intensiv.ui.movie_details.MovieDetailsFragment">
 
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/image_view"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/image_height_210dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/img_details"
-            app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/app_bar_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@null"
-            app:elevation="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/my_toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:minHeight="?attr/actionBarSize" />
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/title"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/material_margin_normal"
-            android:layout_marginTop="@dimen/material_margin_large"
-            android:layout_marginEnd="@dimen/material_margin_small"
-            android:textColor="@color/white"
-            android:textSize="32sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/image_view_4k_ic"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/image_view"
-            app:layout_goneMarginEnd="@dimen/material_margin_normal"
-            tools:text="Aquamen" />
-
-        <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/image_view_4k_ic"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/material_margin_super_large"
-            android:layout_marginEnd="@dimen/material_margin_normal"
-            android:src="@drawable/ic_4k"
-            app:layout_constraintBottom_toBottomOf="@id/title"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <androidx.appcompat.widget.AppCompatRatingBar
-            android:id="@+id/tv_show_item_rating"
-            style="@style/Base.Widget.AppCompat.RatingBar.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/material_margin_normal"
-            android:isIndicator="true"
-            android:numStars="5"
-            android:progressBackgroundTint="@color/colorControlNormal"
-            android:stepSize="0.5"
-            app:layout_constraintBottom_toBottomOf="@id/btn_to_see"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/btn_to_see"
-            tools:rating="5" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_to_see"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:layout_marginStart="@dimen/material_margin_normal"
-            android:layout_marginTop="@dimen/material_margin_small"
-            android:backgroundTint="@color/btn_bg"
-            android:letterSpacing="0"
-            android:text="@string/watch"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            app:cornerRadius="18dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/title" />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/description"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/material_margin_normal"
-            android:layout_marginTop="@dimen/material_margin_normal"
-            android:layout_marginEnd="@dimen/material_margin_normal"
-            android:lineHeight="@dimen/dimens_22"
-            android:textColor="@color/text_white"
-            android:textSize="@dimen/text_size_normal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_to_see"
-            tools:text="@string/lorem_text" />
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/actors_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/material_margin_large"
-            android:orientation="horizontal"
-            android:overScrollMode="never"
-            android:scrollbars="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintTop_toBottomOf="@id/description"
-            tools:itemCount="2"
-            tools:listitem="@layout/actor_item" />
-
-        <LinearLayout
-            android:id="@+id/params_container"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/main_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/material_margin_normal"
-            android:orientation="vertical"
-            android:paddingBottom="@dimen/material_margin_large"
-            app:layout_constraintTop_toBottomOf="@id/actors_recycler_view">
+            android:visibility="visible">
 
-        </LinearLayout>
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image_view"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/image_height_210dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/img_details"
+                app:layout_constraintTop_toTopOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <com.google.android.material.appbar.AppBarLayout
+                android:id="@+id/app_bar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                app:elevation="0dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-</androidx.core.widget.NestedScrollView>
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/my_toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?attr/actionBarSize" />
+
+            </com.google.android.material.appbar.AppBarLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/material_margin_normal"
+                android:layout_marginTop="@dimen/material_margin_large"
+                android:layout_marginEnd="@dimen/material_margin_small"
+                android:textColor="@color/white"
+                android:textSize="32sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@id/image_view_4k_ic"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/image_view"
+                app:layout_goneMarginEnd="@dimen/material_margin_normal"
+                tools:text="Aquamen" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/image_view_4k_ic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/material_margin_super_large"
+                android:layout_marginEnd="@dimen/material_margin_normal"
+                android:src="@drawable/ic_4k"
+                app:layout_constraintBottom_toBottomOf="@id/title"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <androidx.appcompat.widget.AppCompatRatingBar
+                android:id="@+id/tv_show_item_rating"
+                style="@style/Base.Widget.AppCompat.RatingBar.Small"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/material_margin_normal"
+                android:isIndicator="true"
+                android:numStars="5"
+                android:progressBackgroundTint="@color/colorControlNormal"
+                android:stepSize="0.5"
+                app:layout_constraintBottom_toBottomOf="@id/btn_to_see"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/btn_to_see"
+                tools:rating="5" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_to_see"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="@dimen/material_margin_normal"
+                android:layout_marginTop="@dimen/material_margin_small"
+                android:backgroundTint="@color/btn_bg"
+                android:letterSpacing="0"
+                android:text="@string/watch"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                app:cornerRadius="18dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/title" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/material_margin_normal"
+                android:layout_marginTop="@dimen/material_margin_normal"
+                android:layout_marginEnd="@dimen/material_margin_normal"
+                android:lineHeight="@dimen/dimens_22"
+                android:textColor="@color/text_white"
+                android:textSize="@dimen/text_size_normal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_to_see"
+                tools:text="@string/lorem_text" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/actors_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/material_margin_large"
+                android:orientation="horizontal"
+                android:overScrollMode="never"
+                android:scrollbars="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"
+                app:layout_constraintTop_toBottomOf="@id/description"
+                tools:itemCount="2"
+                tools:listitem="@layout/actor_item" />
+
+            <LinearLayout
+                android:id="@+id/params_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="@dimen/material_margin_normal"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/material_margin_large"
+                app:layout_constraintTop_toBottomOf="@id/actors_recycler_view">
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+</FrameLayout>

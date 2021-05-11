@@ -7,9 +7,8 @@ import android.view.View
 import android.widget.EditText
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
-import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.PublishSubject
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.search_toolbar.view.*
@@ -26,6 +25,12 @@ class SearchBar @JvmOverloads constructor(
     private var hint: String = ""
     private var isCancelVisible: Boolean = true
 
+    private val searchPublishSubject = PublishSubject.create<String>()
+    fun getSearchPublishSubject() = searchPublishSubject
+        .map { str -> str.replace(" ", "") }
+        .filter { it.length > minSearchedString }
+        .debounce(debounceTimeout, TimeUnit.MILLISECONDS)
+
     init {
         LayoutInflater.from(context).inflate(R.layout.search_toolbar, this)
         if (attrs != null) {
@@ -35,17 +40,12 @@ class SearchBar @JvmOverloads constructor(
                 recycle()
             }
         }
+        searchViewObservable()
     }
 
-    fun changeListener(): Observable<String> = searchViewObservable()
-            .map { str -> str.replace(" ", "") }
-            .filter { it.length > minSearchedString }
-            .debounce(debounceTimeout, TimeUnit.MILLISECONDS)
-
-    private fun searchViewObservable() =
-        Observable.create(ObservableOnSubscribe<String> { emitter ->
-            editText.afterTextChanged { emitter.onNext(it.toString()) }
-        })
+    private fun searchViewObservable() {
+        editText.afterTextChanged { searchPublishSubject.onNext(it.toString()) }
+    }
 
     fun setText(text: String?) {
         this.editText.setText(text)

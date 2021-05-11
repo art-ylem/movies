@@ -8,24 +8,37 @@ import android.view.View
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.room.Room
 import com.xwray.groupie.GroupAdapter
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.subjects.PublishSubject
+import java.util.concurrent.TimeUnit
 import kotlinx.android.synthetic.main.movie_details_fragment.*
+import kotlinx.android.synthetic.main.movie_details_fragment.description
 import kotlinx.android.synthetic.main.movie_param.view.*
-import ru.androidschool.intensiv.R
-import ru.androidschool.intensiv.data.MovieCredits
-import ru.androidschool.intensiv.data.MovieInfo
-import ru.androidschool.intensiv.myObserve
-import ru.androidschool.intensiv.retrofit
-import ru.androidschool.intensiv.toRating
+import ru.androidschool.intensiv.*
+import ru.androidschool.intensiv.data.dto.DetailedMovie
+import ru.androidschool.intensiv.data.dto.DetailedMovieEntity
+import ru.androidschool.intensiv.data.dto.MovieCredits
+import ru.androidschool.intensiv.data.dto.MovieInfo
+import ru.androidschool.intensiv.room.AppDB
 import timber.log.Timber
 
 class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
 
     private val cd = CompositeDisposable()
+    private val likePublishSubject = PublishSubject.create<Boolean>()
     private val adapter by lazy {
         GroupAdapter<com.xwray.groupie.kotlinandroidextensions.GroupieViewHolder>()
     }
+    private val db by lazy {
+        Room.databaseBuilder(
+            requireContext(),
+            AppDB::class.java, movieDB
+        ).build()
+    }
+    private var currentMovie: DetailedMovie? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,24 +48,33 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
     }
 
     private fun loadData(id: String) {
-        loadMovieInfo(id)
-        loadMovieCredits(id)
-    }
-
-    private fun loadMovieCredits(id: String) {
-        val dis = retrofit.movieCreditsByIdRequest(id)
-            .myObserve()
-            .subscribe({ setCredits(it) }, { Timber.e(it) })
+        val dis = Single.zip(
+            retrofit.movieCreditsByIdRequest(id),
+            retrofit.movieInfoByIdRequest(id),
+            { movieCredits, movieInfo ->
+                DetailedMovie(
+                    movieCredits,
+                    movieInfo
+                )
+            })
+            .doOnSubscribe { showProgressBar() }
+            .applySchedulers()
+            .doFinally { hideProgressBar() }
+            .subscribe({
+                dataLoaded(it)
+            }, {
+                Timber.e(it)
+            })
 
         cd.add(dis)
     }
 
-    private fun loadMovieInfo(id: String) {
-        val dis = retrofit.movieInfoByIdRequest(id)
-            .myObserve()
-            .subscribe({ setInfo(it) }, { Timber.e(it) })
+    private fun dataLoaded(detailedMovie: DetailedMovie?) {
+        // QUESTION: copy() - чтобы если алоцировал место в памяти под свой объект, а не просто ссылался на detailedMovie
+        currentMovie = detailedMovie?.copy()
 
-        cd.add(dis)
+        detailedMovie?.credits?.let { setCredits(it) }
+        detailedMovie?.info?.let { setInfo(it) }
     }
 
     private fun setToolbar() {
@@ -70,6 +92,42 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         checkBox.setButtonDrawable(R.drawable.like_selector)
         checkBox.setPadding(0, 0, 32, 0)
         checkBox.buttonTintMode = null
+        likeBtnListener(checkBox)
+        likeBtnObserver()
+    }
+
+    private fun likeBtnObserver() {
+        // QUESTION: subject - чтобы можно было пользоваться методом debounce
+        val dis = likePublishSubject.debounce(debounceTime, TimeUnit.SECONDS)
+            .subscribe { isLiked ->
+                if (isLiked) {
+                    saveDataToDB(currentMovie)
+                } else {
+                    deleteDataFromDB(currentMovie)
+                }
+            }
+        cd.add(dis)
+    }
+
+    private fun deleteDataFromDB(currentMovie: DetailedMovie?) {
+        currentMovie?.let {
+            roomEntityMapper(it)?.let { dbData -> db.movies().delete(dbData) }
+        }
+    }
+
+    private fun saveDataToDB(currentMovie: DetailedMovie?) {
+        currentMovie?.let {
+            roomEntityMapper(it)?.let { dbData -> db.movies().insert(dbData) }
+        }
+    }
+
+    private fun roomEntityMapper(data: DetailedMovie) =
+        data.info?.id?.let { id -> DetailedMovieEntity(id, data.info.posterPath) }
+
+    private fun likeBtnListener(checkBox: CheckBox) {
+        checkBox.setOnCheckedChangeListener { _, isChecked ->
+            likePublishSubject.onNext(isChecked)
+        }
     }
 
     private fun setInfo(data: MovieInfo) {
@@ -80,6 +138,18 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         title.text = data.title
         description.text = data.overview
         tv_show_item_rating.rating = data.voteAverage?.toRating()!!
+
+        image_view.setUsePicasso(data.posterPath)
+    }
+
+    private fun hideProgressBar() {
+        progress_bar.visibility = View.GONE
+        main_container.visibility = View.VISIBLE
+    }
+
+    private fun showProgressBar() {
+        progress_bar.visibility = View.VISIBLE
+        main_container.visibility = View.GONE
     }
 
     private fun setCredits(data: MovieCredits) {
@@ -122,11 +192,13 @@ class MovieDetailsFragment : Fragment(R.layout.movie_details_fragment) {
         super.onStop()
         adapter.clear()
         cd.clear()
+        currentMovie = null
     }
 
     companion object {
-        // QUESTION: все "magic number" вынести в companion object?
         private const val yearSubstring = 4
+        private const val debounceTime = 1L
         private const val movieId = "movieId"
+        private const val movieDB = "movie_database"
     }
 }

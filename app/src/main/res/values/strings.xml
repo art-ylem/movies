@@ -31,4 +31,5 @@
     <string name="ic_like">Избранное</string>
     <string name="year">Год</string>
     <string name="genres">Жанры</string>
+    <string name="nowPlaying">Now Playing</string>
 </resources>

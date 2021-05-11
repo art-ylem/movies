@@ -1,9 +1,11 @@
 <component name="libraryTable">
   <library name="Gradle: com.xwray:groupie:2.8.0@aar">
     <CLASSES>
-      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/67fa5ff2626534e5f00d0eabf178f8e4/groupie-2.8.0/jars/classes.jar!/" />
       <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/67fa5ff2626534e5f00d0eabf178f8e4/groupie-2.8.0/res" />
-      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/67fa5ff2626534e5f00d0eabf178f8e4/groupie-2.8.0/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/e5d59e75476c524a62cb2f1560f678aa/groupie-2.8.0/res" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/14c308748269ebc9c70c951eb73476af/groupie-2.8.0/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/14c308748269ebc9c70c951eb73476af/groupie-2.8.0/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-2/files-2.1/14c308748269ebc9c70c951eb73476af/groupie-2.8.0/AndroidManifest.xml" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.xwray/groupie/2.8.0/2ba8ba593ae454dcad4fe47f8198d79d37d455f/groupie-2.8.0-javadoc.jar!/" />
